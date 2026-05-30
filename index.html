@@ -235,7 +235,7 @@ input[type="number"] {
   margin-top:8px;
 }
 
-/* カレンダー用スタイル */
+/* カレンダー用スタイル（1週間横一列表示） */
 .calendar-title {
   font-size: 18px;
   font-weight: bold;
@@ -257,14 +257,21 @@ input[type="number"] {
 .calendar-cell {
   aspect-ratio: 1;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 600;
   border-radius: 10px;
   background: rgba(99,102,241,.03);
   color: var(--sub);
   border: 1px solid var(--border);
+  padding: 2px;
+}
+.calendar-cell .month-label {
+  font-size: 9px;
+  font-weight: normal;
+  opacity: 0.8;
 }
 .calendar-cell.active-day {
   color: var(--text);
@@ -379,6 +386,8 @@ canvas{
   .question{font-size:42px;}
   .button-row>*{width:100%;}
   .ox-btn{width:100%;}
+  .calendar-cell { font-size: 11px; }
+  .calendar-cell .month-label { font-size: 8px; }
 }
 </style>
 </head>
@@ -597,7 +606,6 @@ function closeModal(e) {
   if(e.target.id === "customModal") hideModal();
 }
 
-// 1問回答ごとに内部カウントを加算
 function trackAnswerForToday(duration){
   const now = new Date();
   const y = now.getFullYear();
@@ -623,16 +631,17 @@ function showDayDetails(dateKey, displayDate) {
   openModal(`📊 ${displayDate} の学習結果`, msg);
 }
 
+// 今週の日曜〜土曜の横一列カレンダー生成
 function generateCalendarHTML(){
   const now = new Date();
-  const year = now.getFullYear();
-  const month = now.getMonth(); 
+  const currentDay = now.getDay(); // 0:日, 1:月, ..., 6:土
   
-  const firstDay = new Date(year, month, 1).getDay();
-  const lastDate = new Date(year, month + 1, 0).getDate();
+  // 今週の日曜日の日付を計算
+  const sunday = new Date(now);
+  sunday.setDate(now.getDate() - currentDay);
   
   let html = `
-    <div class="calendar-title">${year}年 ${month + 1}月の学習記録</div>
+    <div class="calendar-title">今週の学習記録 (日曜日 〜 土曜日)</div>
     <div class="calendar-grid">
       <div class="calendar-day-label">日</div>
       <div class="calendar-day-label">月</div>
@@ -643,29 +652,43 @@ function generateCalendarHTML(){
       <div class="calendar-day-label">土</div>
   `;
   
-  for(let i=0; i<firstDay; i++){
-    html += `<div class="calendar-cell" style="opacity:0;"></div>`;
-  }
+  const todayY = now.getFullYear();
+  const todayM = now.getMonth();
+  const todayD = now.getDate();
   
-  const todayDate = now.getDate();
-  const mStr = String(month + 1).padStart(2, '0');
-  
-  for(let date=1; date<=lastDate; date++){
-    const dStr = String(date).padStart(2, '0');
-    const fullDateKey = `${year}-${mStr}-${dStr}`;
-    const displayDate = `${month + 1}月${date}日`;
+  // 日曜日から土曜日までの7日間をループ生成
+  for(let i = 0; i < 7; i++) {
+    const walkDate = new Date(sunday);
+    walkDate.setDate(sunday.getDate() + i);
+    
+    const y = walkDate.getFullYear();
+    const m = walkDate.getMonth() + 1;
+    const d = walkDate.getDate();
+    
+    const mStr = String(m).padStart(2, '0');
+    const dStr = String(d).padStart(2, '0');
+    const fullDateKey = `${y}-${mStr}-${dStr}`;
+    const displayDate = `${m}月${d}日`;
     
     let classes = "calendar-cell active-day";
     let onClickAttr = "";
     
-    if(date === todayDate) classes += " today";
+    // 今日判定
+    if(y === todayY && walkDate.getMonth() === todayM && d === todayD) {
+      classes += " today";
+    }
     
+    // 学習実績あり判定
     if(historyDates[fullDateKey] && historyDates[fullDateKey].count > 0) {
       classes += " done";
       onClickAttr = `onclick="showDayDetails('${fullDateKey}', '${displayDate}')"`;
     }
     
-    html += `<div class="${classes}" ${onClickAttr}>${date}</div>`;
+    html += `
+      <div class="${classes}" ${onClickAttr}>
+        <span class="month-label">${m}/</span>${d}
+      </div>
+    `;
   }
   
   html += `</div>`;
