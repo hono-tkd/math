@@ -562,8 +562,6 @@ originalQuiz.questions.forEach(q=>{
   }
 });
 
-loadLocalStats();
-
 function normalize(str){
   return str
     .replace(/[０-９]/g,s=>String.fromCharCode(s.charCodeAt(0)-0xFEE0))
@@ -577,34 +575,6 @@ function shuffle(arr){
     const j=Math.floor(Math.random()*(i+1));
     [arr[i],arr[j]]=[arr[j],arr[i]];
   }
-}
-
-function saveLocalStats(){
-  localStorage.setItem(
-    "smartQuizStatsAll",
-    JSON.stringify(originalQuiz.questions.map(q=>q.stats))
-  );
-  localStorage.setItem("smartQuizRecentTimes", JSON.stringify(recentTimes));
-  localStorage.setItem("smartQuizHistoryDatesV2", JSON.stringify(historyDates));
-  localStorage.setItem("smartQuizTotalCountGlobal", totalCountGlobal);
-}
-
-function loadLocalStats(){
-  const saved=localStorage.getItem("smartQuizStatsAll");
-  if(saved) {
-    const stats=JSON.parse(saved);
-    originalQuiz.questions.forEach((q,i)=>{
-      if(stats[i]) q.stats=stats[i];
-    });
-  }
-  const savedTimes=localStorage.getItem("smartQuizRecentTimes");
-  if(savedTimes) recentTimes=JSON.parse(savedTimes);
-  
-  const savedDates=localStorage.getItem("smartQuizHistoryDatesV2");
-  if(savedDates) historyDates=JSON.parse(savedDates);
-  
-  const savedGlobalCount = localStorage.getItem("smartQuizTotalCountGlobal");
-  if(savedGlobalCount) totalCountGlobal = parseInt(savedGlobalCount);
 }
 
 function getRecentAverageSpeed(){
@@ -641,8 +611,6 @@ function trackAnswerForToday(duration){
   
   historyDates[dateStr].count += 1;
   totalCountGlobal += 1;
-  
-  saveLocalStats();
 }
 
 function showDayDetails(dateKey, displayDate) {
@@ -1222,9 +1190,6 @@ async function loadDataFromFirebase() {
     if (totalDocSnap.exists()) {
       totalCountGlobal = totalDocSnap.data().totalCount || 0;
     }
-
-    // 同期したデータをLocalStorageにバックアップ保存
-    saveLocalStats();
 
     // UIパーツをリフレッシュ
     const label = document.getElementById("globalCountLabel");
