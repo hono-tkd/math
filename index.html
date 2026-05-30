@@ -235,7 +235,7 @@ input[type="number"] {
   margin-top:8px;
 }
 
-/* カレンダー用スタイル（月も日も同じ大きさの1週間横一列版） */
+/* カレンダー用スタイル（PCベース） */
 .calendar-title {
   font-size: 18px;
   font-weight: bold;
@@ -259,19 +259,19 @@ input[type="number"] {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 18px; /* 日付の文字サイズ */
+  font-size: 16px; /* 飛び出し防止のため少し標準サイズ調整 */
   font-weight: 700;
   border-radius: 10px;
   background: rgba(99,102,241,.03);
   color: var(--sub);
   border: 1px solid var(--border);
   padding: 4px;
-  white-space: nowrap; /* 改行させずに1列に並べる */
+  white-space: nowrap;
 }
 .calendar-cell .month-label {
-  font-size: 18px; /* 月の文字サイズも日付と同じ大きさに変更 */
-  font-weight: 700; /* 太さも日付と統一 */
-  opacity: 0.9;
+  font-size: 14px;
+  font-weight: 700;
+  opacity: 0.8;
 }
 .calendar-cell.active-day {
   color: var(--text);
@@ -381,13 +381,20 @@ canvas{
   border-radius:18px;
 }
 
+/* スマホ用レスポンシブスタイル修正 */
 @media(max-width:640px){
   h1{font-size:32px;}
   .question{font-size:42px;}
   .button-row>*{width:100%;}
   .ox-btn{width:100%;}
-  .calendar-cell { font-size: 15px; }
-  .calendar-cell .month-label { font-size: 15px; }
+  /* ここでスマホ時に文字を小さくし、絶対にはみ出さないようにガード */
+  .calendar-cell { 
+    font-size: 12px !important; 
+    padding: 2px !important;
+  }
+  .calendar-cell .month-label { 
+    font-size: 10px !important; 
+  }
 }
 </style>
 </head>
