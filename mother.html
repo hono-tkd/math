@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>学習確認カレンダー</title>
+
+<style>
+:root{
+  --bg:#f4f7fb;
+  --card:#ffffff;
+  --text:#1e293b;
+  --sub:#64748b;
+  --primary:#4f46e5;
+  --primary2:#4338ca;
+  --good:#16a34a;
+  --border:#dbe4ff;
+}
+
+@media (prefers-color-scheme: dark){
+  :root{
+    --bg:#0f172a;
+    --card:#111827;
+    --text:#f8fafc;
+    --sub:#94a3b8;
+    --border:#334155;
+  }
+}
+
+*{
+  box-sizing:border-box;
+}
+
+body{
+  margin:0;
+  padding:20px;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  background:var(--bg);
+  color:var(--text);
+}
+
+.container{
+  max-width:600px;
+  margin:auto;
+}
+
+h1{
+  text-align:center;
+  font-size:32px;
+  margin-bottom:8px;
+}
+
+.subtitle{
+  text-align:center;
+  color:var(--sub);
+  margin-bottom:26px;
+}
+
+.card{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:24px;
+  padding:24px;
+  margin-bottom:18px;
+  box-shadow:0 10px 28px rgba(0,0,0,.08);
+}
+
+.loading-text {
+  text-align: center;
+  color: var(--sub);
+  font-weight: bold;
+  padding: 10px;
+}
+
+/* カレンダー用スタイル */
+.calendar-title {
+  font-size: 20px;
+  font-weight: bold;
+  margin-bottom: 16px;
+  color: var(--text);
+  text-align: center;
+}
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 8px;
+  text-align: center;
+}
+.calendar-day-label {
+  font-size: 14px;
+  font-weight: bold;
+  color: var(--sub);
+  padding-bottom: 6px;
+}
+.calendar-cell {
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  font-weight: 600;
+  border-radius: 12px;
+  background: rgba(99,102,241,.03);
+  color: var(--sub);
+  border: 1px solid var(--border);
+}
+.calendar-cell.active-day {
+  color: var(--text);
+  background: var(--bg);
+}
+.calendar-cell.done {
+  background: #22c55e !important;
+  color: white !important;
+  border-color: #16a34a !important;
+  cursor: pointer;
+}
+.calendar-cell.today {
+  border: 2px solid var(--primary);
+}
+
+/* 自作ポップアップモーダルのスタイル */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+}
+.modal-overlay.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+.modal-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 24px;
+  padding: 28px;
+  width: 90%;
+  max-width: 400px;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+  transform: scale(0.9);
+  transition: transform 0.2s ease;
+  text-align: center;
+}
+.modal-overlay.active .modal-card {
+  transform: scale(1);
+}
+.modal-header {
+  font-size: 22px;
+  font-weight: bold;
+  margin-bottom: 14px;
+}
+.modal-body {
+  font-size: 18px;
+  color: var(--text);
+  line-height: 1.6;
+  margin-bottom: 22px;
+  white-space: pre-line;
+}
+
+.main-btn {
+  border: none;
+  border-radius: 16px;
+  padding: 14px 20px;
+  font-size: 18px;
+  cursor: pointer;
+  background: linear-gradient(135deg,var(--primary),var(--primary2));
+  color: white;
+  width: 100%;
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+  <h1>学習確認カレンダー</h1>
+  <div class="subtitle">穂乃花の今日の頑張りを確認</div>
+
+  <div class="card" id="calendarCard">
+    <div class="loading-text" id="loadingText">データを読み込んでいます...</div>
+    <div id="calendarContainer"></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="customModal" onclick="closeModal(event)">
+  <div class="modal-card" onclick="event.stopPropagation()">
+    <div class="modal-header" id="modalTitle">📊 学習記録</div>
+    <div class="modal-body" id="modalBody">メッセージ</div>
+    <button class="main-btn" onclick="hideModal()">閉じる</button>
+  </div>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js";
+import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-firestore.js";
+
+// Firebase設定オブジェクト（お子さん側と同一）
+const firebaseConfig = {
+  apiKey: "AIzaSyBfnGiwlxhP50_mc8HoaYimFqEN-dN6CqU",
+  authDomain: "honoka-anki.firebaseapp.com",
+  projectId: "honoka-anki",
+  storageBucket: "honoka-anki.firebasestorage.app",
+  messagingSenderId: "229410463571",
+  appId: "1:229410463571:web:601b58c335f5d7f0bd0ba6",
+  measurementId: "G-HS41FKYV0Q"
+};
+
+// 初期化
+const fbApp = initializeApp(firebaseConfig);
+const db = getFirestore(fbApp);
+
+// クラウドから取得したデータを格納するオブジェクト
+let firebaseHistory = {};
+
+// モーダル制御用の関数をグローバルに展開
+window.showDayDetails = function(dateKey, displayDate) {
+  const data = firebaseHistory[dateKey];
+  if(!data) return;
+  const msg = `この日に解いた問題数: ${data.count} 問\n\nよく頑張りました！🌟`;
+  document.getElementById("modalTitle").textContent = `📊 ${displayDate} の記録`;
+  document.getElementById("modalBody").textContent = msg;
+  document.getElementById("customModal").classList.add("active");
+};
+
+window.hideModal = function() {
+  document.getElementById("customModal").classList.remove("active");
+};
+
+window.closeModal = function(e) {
+  if(e.target.id === "customModal") hideModal();
+};
+
+// カレンダーHTMLの生成
+function generateParentCalendar(){
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = now.getMonth(); 
+  
+  const firstDay = new Date(year, month, 1).getDay();
+  const lastDate = new Date(year, month + 1, 0).getDate();
+  
+  let html = `
+    <div class="calendar-title">${year}年 ${month + 1}月</div>
+    <div class="calendar-grid">
+      <div class="calendar-day-label">日</div>
+      <div class="calendar-day-label">月</div>
+      <div class="calendar-day-label">火</div>
+      <div class="calendar-day-label">水</div>
+      <div class="calendar-day-label">木</div>
+      <div class="calendar-day-label">金</div>
+      <div class="calendar-day-label">土</div>
+  `;
+  
+  for(let i=0; i<firstDay; i++){
+    html += `<div class="calendar-cell" style="opacity:0;"></div>`;
+  }
+  
+  const todayDate = now.getDate();
+  const mStr = String(month + 1).padStart(2, '0');
+  
+  for(let date=1; date<=lastDate; date++){
+    const dStr = String(date).padStart(2, '0');
+    const fullDateKey = `${year}-${mStr}-${dStr}`;
+    const displayDate = `${month + 1}月${date}日`;
+    
+    let classes = "calendar-cell active-day";
+    let onClickAttr = "";
+    
+    if(date === todayDate) classes += " today";
+    
+    // Firebase側にデータがあり、かつ問題数が1問以上の場合は緑色にする
+    if(firebaseHistory[fullDateKey] && firebaseHistory[fullDateKey].count > 0) {
+      classes += " done";
+      onClickAttr = `onclick="showDayDetails('${fullDateKey}', '${displayDate}')"`;
+    }
+    
+    html += `<div class="${classes}" ${onClickAttr}>${date}</div>`;
+  }
+  
+  html += `</div>`;
+  return html;
+}
+
+// Firebaseからデータをまとめて取得してカレンダーを描画
+async function loadFirebaseData() {
+  try {
+    const querySnapshot = await getDocs(collection(db, "daily_records"));
+    querySnapshot.forEach((doc) => {
+      // doc.id は "2026-05-28" のような日付文字列
+      firebaseHistory[doc.id] = doc.data();
+    });
+    
+    // ローディングテキストを消してカレンダーを表示
+    document.getElementById("loadingText").style.display = "none";
+    document.getElementById("calendarContainer").innerHTML = generateParentCalendar();
+  } catch (error) {
+    console.error("Firebaseからのデータ取得に失敗しました:", error);
+    document.getElementById("loadingText").textContent = "データの読み込みに失敗しました。";
+  }
+}
+
+// 起動時にデータを読み込む
+loadFirebaseData();
+</script>
+</body>
+</html>
