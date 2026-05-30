@@ -235,7 +235,7 @@ input[type="number"] {
   margin-top:8px;
 }
 
-/* カレンダー用スタイル（1週間横一列表示） */
+/* カレンダー用スタイル（1週間横一列・文字サイズ拡大版） */
 .calendar-title {
   font-size: 18px;
   font-weight: bold;
@@ -257,20 +257,20 @@ input[type="number"] {
 .calendar-cell {
   aspect-ratio: 1;
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
-  font-size: 13px;
-  font-weight: 600;
+  font-size: 18px; /* 日付の文字を大きく変更 */
+  font-weight: 700;
   border-radius: 10px;
   background: rgba(99,102,241,.03);
   color: var(--sub);
   border: 1px solid var(--border);
-  padding: 2px;
+  padding: 4px;
+  white-space: nowrap; /* 一列で収める */
 }
 .calendar-cell .month-label {
-  font-size: 9px;
-  font-weight: normal;
+  font-size: 12px; /* 月の部分の文字サイズ */
+  font-weight: 500;
   opacity: 0.8;
 }
 .calendar-cell.active-day {
@@ -386,8 +386,8 @@ canvas{
   .question{font-size:42px;}
   .button-row>*{width:100%;}
   .ox-btn{width:100%;}
-  .calendar-cell { font-size: 11px; }
-  .calendar-cell .month-label { font-size: 8px; }
+  .calendar-cell { font-size: 15px; } /* スマホでもはみ出さない大きめのサイズ */
+  .calendar-cell .month-label { font-size: 10px; }
 }
 </style>
 </head>
@@ -684,10 +684,9 @@ function generateCalendarHTML(){
       onClickAttr = `onclick="showDayDetails('${fullDateKey}', '${displayDate}')"`;
     }
     
+    // 月と日を改行させずに横一列で出力
     html += `
-      <div class="${classes}" ${onClickAttr}>
-        <span class="month-label">${m}/</span>${d}
-      </div>
+      <div class="${classes}" ${onClickAttr}><span class="month-label">${m}/</span>${d}</div>
     `;
   }
   
@@ -1249,7 +1248,7 @@ async function syncToFirebase(dateStr) {
   }
 }
 
-// 既存の trackAnswerForToday をフック拡張
+// 既存 of trackAnswerForToday をフック拡張
 const originalTrackAnswer = trackAnswerForToday;
 trackAnswerForToday = function(duration) {
   originalTrackAnswer(duration);
