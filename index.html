@@ -1,0 +1,1282 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>穂乃花用 暗記ページ</title>
+
+<style>
+:root{
+  --bg:#f4f7fb;
+  --card:#ffffff;
+  --text:#1e293b;
+  --sub:#64748b;
+  --primary:#4f46e5;
+  --primary2:#4338ca;
+  --good:#16a34a;
+  --bad:#dc2626;
+  --border:#dbe4ff;
+}
+
+@media (prefers-color-scheme: dark){
+  :root{
+    --bg:#0f172a;
+    --card:#111827;
+    --text:#f8fafc;
+    --sub:#94a3b8;
+    --border:#334155;
+  }
+}
+
+*{
+  box-sizing:border-box;
+}
+
+body{
+  margin:0;
+  padding:20px;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  overflow-x: hidden;
+}
+
+.container{
+  max-width:920px;
+  margin:auto;
+}
+
+h1{
+  text-align:center;
+  font-size:40px;
+  margin-bottom:8px;
+}
+
+.subtitle{
+  text-align:center;
+  color:var(--sub);
+  margin-bottom:26px;
+}
+
+.card{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:24px;
+  padding:24px;
+  margin-bottom:18px;
+  box-shadow:0 10px 28px rgba(0,0,0,.08);
+  position: relative;
+}
+
+.shake {
+  animation: shakeAnim 0.4s ease-in-out;
+}
+@keyframes shakeAnim {
+  0%, 100% { transform: translateX(0); }
+  20%, 60% { transform: translateX(-8px); }
+  40%, 80% { transform: translateX(8px); }
+}
+
+.select-grid{
+  display:flex;
+  flex-wrap:wrap;
+  gap:10px;
+}
+
+.select-btn{
+  border:none;
+  border-radius:14px;
+  padding:12px 18px;
+  cursor:pointer;
+  background:#e5e7eb;
+  color:#1e293b;
+  font-size:16px;
+  transition:.2s;
+}
+
+.select-btn.active{
+  background:linear-gradient(135deg,var(--primary),var(--primary2));
+  color:white;
+}
+
+.markdown-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 10px;
+}
+
+.markdown-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 18px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.markdown-item input[type="checkbox"] {
+  width: 22px;
+  height: 22px;
+  cursor: pointer;
+  accent-color: var(--primary);
+}
+
+input[type="number"] {
+  width: 100%;
+  padding: 16px;
+  border-radius: 16px;
+  border: 2px solid var(--border);
+  font-size: 24px;
+  background: var(--card);
+  color: var(--text);
+}
+
+.main-btn,.sub-btn,.danger-btn,.danger-sub-btn,.ox-btn{
+  border:none;
+  border-radius:16px;
+  padding:14px 20px;
+  font-size:18px;
+  cursor:pointer;
+}
+
+.main-btn{
+  background:linear-gradient(135deg,var(--primary),var(--primary2));
+  color:white;
+}
+
+.sub-btn{
+  background:transparent;
+  border:2px solid var(--primary);
+  color:var(--primary);
+}
+
+.danger-btn{
+  background:#dc2626;
+  color:white;
+}
+
+.danger-sub-btn{
+  background:transparent;
+  border:2px solid #dc2626;
+  color:#dc2626;
+}
+
+.ox-btn{
+  width:140px;
+  font-size:34px;
+  font-weight:bold;
+}
+
+.button-row{
+  display:flex;
+  gap:12px;
+  flex-wrap:wrap;
+  margin-top:18px;
+}
+
+.button-row.center{
+  justify-content:center;
+}
+
+.question{
+  text-align:center;
+  font-size:58px;
+  font-weight:800;
+  margin:34px 0;
+}
+
+.topbar{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  flex-wrap:wrap;
+  gap:10px;
+}
+
+.badge{
+  background:#e0e7ff;
+  color:#3730a3;
+  padding:8px 14px;
+  border-radius:999px;
+  font-weight:bold;
+}
+
+.progress{
+  width:100%;
+  height:20px;
+  background:#cbd5e1;
+  border-radius:999px;
+  overflow:hidden;
+  margin:18px 0;
+}
+
+.progress-inner{
+  height:100%;
+  background:linear-gradient(90deg,#22c55e,#16a34a);
+}
+
+.stats{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+  gap:12px;
+  margin-bottom: 20px;
+}
+
+.stat{
+  background:rgba(99,102,241,.08);
+  border-radius:18px;
+  padding:16px;
+}
+
+.stat-value{
+  font-size:30px;
+  font-weight:bold;
+  margin-top:8px;
+}
+
+/* カレンダー用スタイル */
+.calendar-title {
+  font-size: 18px;
+  font-weight: bold;
+  margin-bottom: 12px;
+  color: var(--text);
+}
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 6px;
+  text-align: center;
+}
+.calendar-day-label {
+  font-size: 12px;
+  font-weight: bold;
+  color: var(--sub);
+  padding-bottom: 4px;
+}
+.calendar-cell {
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 600;
+  border-radius: 10px;
+  background: rgba(99,102,241,.03);
+  color: var(--sub);
+  border: 1px solid var(--border);
+}
+.calendar-cell.active-day {
+  color: var(--text);
+  background: var(--bg);
+}
+.calendar-cell.done {
+  background: #22c55e !important;
+  color: white !important;
+  border-color: #16a34a !important;
+  cursor: pointer;
+}
+.calendar-cell.today {
+  border: 2px solid var(--primary);
+}
+
+/* 自作ポップアップモーダルのスタイル */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+}
+.modal-overlay.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+.modal-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 24px;
+  padding: 28px;
+  width: 90%;
+  max-width: 440px;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+  transform: scale(0.9);
+  transition: transform 0.2s ease;
+  text-align: center;
+}
+.modal-overlay.active .modal-card {
+  transform: scale(1);
+}
+.modal-header {
+  font-size: 22px;
+  font-weight: bold;
+  margin-bottom: 14px;
+}
+.modal-body {
+  font-size: 16px;
+  color: var(--text);
+  line-height: 1.6;
+  margin-bottom: 22px;
+  white-space: pre-line;
+}
+
+.good{color:var(--good);}
+.bad{color:var(--bad);}
+
+.effect-overlay {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0.5);
+  font-size: 150px;
+  font-weight: bold;
+  opacity: 0;
+  pointer-events: none;
+  z-index: 10;
+}
+.effect-overlay.animate-ok {
+  animation: popUpOk 0.8s forwards ease-out;
+}
+.effect-overlay.animate-ng {
+  animation: popUpNg 0.8s forwards ease-out;
+}
+@keyframes popUpOk {
+  0% { transform: translate(-50%, -50%) scale(0.3); opacity: 0; }
+  30% { transform: translate(-50%, -60%) scale(1.1); opacity: 0.8; }
+  100% { transform: translate(-50%, -80%) scale(1); opacity: 0; }
+}
+@keyframes popUpNg {
+  0% { transform: translate(-50%, -50%) scale(0.3); opacity: 0; }
+  30% { transform: translate(-50%, -50%) scale(1); opacity: 0.8; }
+  100% { transform: translate(-50%, -50%) scale(1); opacity: 0; }
+}
+
+.result-item{
+  background:rgba(99,102,241,.05);
+  border-radius:18px;
+  padding:14px;
+  margin-bottom:12px;
+}
+
+canvas{
+  width:100%;
+  max-height:240px;
+  background:rgba(99,102,241,.05);
+  border-radius:18px;
+}
+
+@media(max-width:640px){
+  h1{font-size:32px;}
+  .question{font-size:42px;}
+  .button-row>*{width:100%;}
+  .ox-btn{width:100%;}
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+
+<h1>穂乃花用 暗記ページ</h1>
+<div class="subtitle" id="loadStatus">
+データを同期中...
+</div>
+
+<div id="app"></div>
+
+</div>
+
+<div class="modal-overlay" id="customModal" onclick="closeModal(event)">
+  <div class="modal-card" onclick="event.stopPropagation()">
+    <div class="modal-header" id="modalTitle">📊 学習記録</div>
+    <div class="modal-body" id="modalBody">ここにメッセージが入ります。</div>
+    <div class="button-row center">
+      <button class="main-btn" style="width: 100%;" onclick="hideModal()">閉じる</button>
+    </div>
+  </div>
+</div>
+
+<script>
+
+const originalQuiz = {
+  "title": "穂乃花用算数暗記",
+  "questions": [
+    /* 11〜19の段 */
+    {"question":"11×1","answer":"11","status":"11"},
+    {"question":"11×2","answer":"22","status":"11"},
+    {"question":"11×3","answer":"33","status":"11"},
+    {"question":"11×4","answer":"44","status":"11"},
+    {"question":"11×5","answer":"55","status":"11"},
+    {"question":"11×6","answer":"66","status":"11"},
+    {"question":"11×7","answer":"77","status":"11"},
+    {"question":"11×8","answer":"88","status":"11"},
+    {"question":"11×9","answer":"99","status":"11"},
+
+    {"question":"12×1","answer":"12","status":"12"},
+    {"question":"12×2","answer":"24","status":"12"},
+    {"question":"12×3","answer":"36","status":"12"},
+    {"question":"12×4","answer":"48","status":"12"},
+    {"question":"12×5","answer":"60","status":"12"},
+    {"question":"12×6","answer":"72","weight":"12"},
+    {"question":"12×7","answer":"84","status":"12"},
+    {"question":"12×8","answer":"96","status":"12"},
+    {"question":"12×9","answer":"108","status":"12"},
+
+    {"question":"13×1","answer":"13","status":"13"},
+    {"question":"13×2","answer":"26","status":"13"},
+    {"question":"13×3","answer":"39","status":"13"},
+    {"question":"13×4","answer":"52","status":"13"},
+    {"question":"13×5","answer":"65","status":"13"},
+    {"question":"13×6","answer":"78","status":"13"},
+    {"question":"13×7","answer":"91","status":"13"},
+    {"question":"13×8","answer":"104","status":"13"},
+    {"question":"13×9","answer":"117","status":"13"},
+
+    {"question":"14×1","answer":"14","status":"14"},
+    {"question":"14×2","answer":"28","status":"14"},
+    {"question":"14×3","answer":"42","status":"14"},
+    {"question":"14×4","answer":"56","status":"14"},
+    {"question":"14×5","answer":"70","status":"14"},
+    {"question":"14×6","answer":"84","status":"14"},
+    {"question":"14×7","answer":"98","status":"14"},
+    {"question":"14×8","answer":"112","status":"14"},
+    {"question":"14×9","answer":"126","status":"14"},
+
+    {"question":"15×1","answer":"15","status":"15"},
+    {"question":"15×2","answer":"30","status":"15"},
+    {"question":"15×3","answer":"45","status":"15"},
+    {"question":"15×4","answer":"60","status":"15"},
+    {"question":"15×5","answer":"75","status":"15"},
+    {"question":"15×6","answer":"90","status":"15"},
+    {"question":"15×7","answer":"105","status":"15"},
+    {"question":"15×8","answer":"120","status":"15"},
+    {"question":"15×9","answer":"135","status":"15"},
+
+    {"question":"16×1","answer":"16","status":"16"},
+    {"question":"16×2","answer":"32","status":"16"},
+    {"question":"16×3","answer":"48","status":"16"},
+    {"question":"16×4","answer":"64","status":"16"},
+    {"question":"16×5","answer":"80","status":"16"},
+    {"question":"16×6","answer":"96","status":"16"},
+    {"question":"16×7","answer":"112","status":"16"},
+    {"question":"16×8","answer":"128","status":"16"},
+    {"question":"16×9","answer":"144","status":"16"},
+
+    {"question":"17×1","answer":"17","status":"17"},
+    {"question":"17×2","answer":"34","status":"17"},
+    {"question":"17×3","answer":"51","status":"17"},
+    {"question":"17×4","answer":"68","status":"17"},
+    {"question":"17×5","answer":"85","status":"17"},
+    {"question":"17×6","answer":"102","status":"17"},
+    {"question":"17×7","answer":"119","status":"17"},
+    {"question":"17×8","answer":"136","status":"17"},
+    {"question":"17×9","answer":"153","status":"17"},
+
+    {"question":"18×1","answer":"18","status":"18"},
+    {"question":"18×2","answer":"36","status":"18"},
+    {"question":"18×3","answer":"54","status":"18"},
+    {"question":"18×4","answer":"72","status":"18"},
+    {"question":"18×5","answer":"90","status":"18"},
+    {"question":"18×6","answer":"108","status":"18"},
+    {"question":"18×7","answer":"126","status":"18"},
+    {"question":"18×8","answer":"144","status":"18"},
+    {"question":"18×9","answer":"162","status":"18"},
+
+    {"question":"19×1","answer":"19","status":"19"},
+    {"question":"19×2","answer":"38","status":"19"},
+    {"question":"19×3","answer":"57","status":"19"},
+    {"question":"19×4","answer":"76","status":"19"},
+    {"question":"19×5","answer":"95","status":"19"},
+    {"question":"19×6","answer":"114","status":"19"},
+    {"question":"19×7","answer":"133","status":"19"},
+    {"question":"19×8","answer":"152","status":"19"},
+    {"question":"19×9","answer":"171","status":"19"},
+
+    /* 平方数 */
+    {"question":"11×11","answer":"121","status":"square"},
+    {"question":"12×12","answer":"144","status":"square"},
+    {"question":"13×13","answer":"169","status":"square"},
+    {"question":"14×14","answer":"196","status":"square"},
+    {"question":"15×15","answer":"225","status":"square"},
+    {"question":"16×16","answer":"256","status":"square"},
+    {"question":"17×17","answer":"289","status":"square"},
+    {"question":"18×18","answer":"324","status":"square"},
+    {"question":"19×19","answer":"361","status":"square"},
+    {"question":"24×24","answer":"576","status":"square"},
+    {"question":"25×25","answer":"625","status":"square"},
+
+    /* 分数→小数 */
+    {"question":"1/2","answer":"0.5","status":"fraction-decimal"},
+    {"question":"1/4","answer":"0.25","status":"fraction-decimal"},
+    {"question":"3/4","answer":"0.75","status":"fraction-decimal"},
+    {"question":"1/5","answer":"0.2","status":"fraction-decimal"},
+    {"question":"2/5","answer":"0.4","status":"fraction-decimal"},
+    {"question":"1/8","answer":"0.125","status":"fraction-decimal"},
+    {"question":"3/8","answer":"0.375","status":"fraction-decimal"},
+    {"question":"1/20","answer":"0.05","status":"fraction-decimal"},
+
+    /* 約分 */
+    {"question":"30/360","answer":"1/12","status":"reduction"},
+    {"question":"45/360","answer":"1/8","status":"reduction"},
+    {"question":"60/360","answer":"1/6","status":"reduction"},
+    {"question":"90/360","answer":"1/4","status":"reduction"},
+    {"question":"120/360","answer":"1/3","status":"reduction"},
+
+    /* 内角 */
+    {"question":"正三角形の内角","answer":"60","status":"angle"},
+    {"question":"正四角形の内角","answer":"90","status":"angle"},
+    {"question":"正五角形の内角","answer":"108","status":"angle"},
+    {"question":"正六角形の内角","answer":"120","status":"angle"},
+    {"question":"正八角形の内角","answer":"135","status":"angle"}
+  ]
+};
+
+const app=document.getElementById("app");
+
+let quiz=null;
+let index=0;
+let score=0;
+let streak=0;
+let results=[];
+let misses=[];
+let questionTimes=[];
+let recentTimes=[]; 
+let historyDates={}; 
+let totalCountGlobal = 0; 
+let questionStart=0;
+let totalStart=0;
+let nextTimer=null;
+
+originalQuiz.questions.forEach(q=>{
+  if(!q.stats){
+    q.stats={correct:0,wrong:0};
+  }
+});
+
+loadLocalStats();
+
+function normalize(str){
+  return str
+    .replace(/[０-９]/g,s=>String.fromCharCode(s.charCodeAt(0)-0xFEE0))
+    .replace(/\s+/g,"")
+    .trim()
+    .toLowerCase();
+}
+
+function shuffle(arr){
+  for(let i=arr.length-1;i>0;i--){
+    const j=Math.floor(Math.random()*(i+1));
+    [arr[i],arr[j]]=[arr[j],arr[i]];
+  }
+}
+
+function saveLocalStats(){
+  localStorage.setItem(
+    "smartQuizStatsAll",
+    JSON.stringify(originalQuiz.questions.map(q=>q.stats))
+  );
+  localStorage.setItem("smartQuizRecentTimes", JSON.stringify(recentTimes));
+  localStorage.setItem("smartQuizHistoryDatesV2", JSON.stringify(historyDates));
+  localStorage.setItem("smartQuizTotalCountGlobal", totalCountGlobal);
+}
+
+function loadLocalStats(){
+  const saved=localStorage.getItem("smartQuizStatsAll");
+  if(saved) {
+    const stats=JSON.parse(saved);
+    originalQuiz.questions.forEach((q,i)=>{
+      if(stats[i]) q.stats=stats[i];
+    });
+  }
+  const savedTimes=localStorage.getItem("smartQuizRecentTimes");
+  if(savedTimes) recentTimes=JSON.parse(savedTimes);
+  
+  const savedDates=localStorage.getItem("smartQuizHistoryDatesV2");
+  if(savedDates) historyDates=JSON.parse(savedDates);
+  
+  const savedGlobalCount = localStorage.getItem("smartQuizTotalCountGlobal");
+  if(savedGlobalCount) totalCountGlobal = parseInt(savedGlobalCount);
+}
+
+function getRecentAverageSpeed(){
+  if(recentTimes.length === 0) return "--";
+  const sum = recentTimes.reduce((a, b) => a + b, 0);
+  return (sum / recentTimes.length).toFixed(1);
+}
+
+function openModal(title, message) {
+  document.getElementById("modalTitle").textContent = title;
+  document.getElementById("modalBody").textContent = message;
+  document.getElementById("customModal").classList.add("active");
+}
+
+function hideModal() {
+  document.getElementById("customModal").classList.remove("active");
+}
+
+function closeModal(e) {
+  if(e.target.id === "customModal") hideModal();
+}
+
+// 1問回答ごとに内部カウントを加算
+function trackAnswerForToday(duration){
+  const now = new Date();
+  const y = now.getFullYear();
+  const m = String(now.getMonth() + 1).padStart(2, '0');
+  const d = String(now.getDate()).padStart(2, '0');
+  const dateStr = `${y}-${m}-${d}`;
+  
+  if(!historyDates[dateStr]) {
+    historyDates[dateStr] = { count: 0 };
+  }
+  
+  historyDates[dateStr].count += 1;
+  totalCountGlobal += 1;
+  
+  saveLocalStats();
+}
+
+function showDayDetails(dateKey, displayDate) {
+  const data = historyDates[dateKey];
+  if(!data || data.count === 0) {
+    openModal("ℹ️ おしらせ", `${displayDate} の詳細データはありません。`);
+    return;
+  }
+  const msg = `解いた問題数: ${data.count} 問`;
+  openModal(`📊 ${displayDate} の学習結果`, msg);
+}
+
+function generateCalendarHTML(){
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = now.getMonth(); 
+  
+  const firstDay = new Date(year, month, 1).getDay();
+  const lastDate = new Date(year, month + 1, 0).getDate();
+  
+  let html = `
+    <div class="calendar-title">${year}年 ${month + 1}月の学習記録</div>
+    <div class="calendar-grid">
+      <div class="calendar-day-label">日</div>
+      <div class="calendar-day-label">月</div>
+      <div class="calendar-day-label">火</div>
+      <div class="calendar-day-label">水</div>
+      <div class="calendar-day-label">木</div>
+      <div class="calendar-day-label">金</div>
+      <div class="calendar-day-label">土</div>
+  `;
+  
+  for(let i=0; i<firstDay; i++){
+    html += `<div class="calendar-cell" style="opacity:0;"></div>`;
+  }
+  
+  const todayDate = now.getDate();
+  const mStr = String(month + 1).padStart(2, '0');
+  
+  for(let date=1; date<=lastDate; date++){
+    const dStr = String(date).padStart(2, '0');
+    const fullDateKey = `${year}-${mStr}-${dStr}`;
+    const displayDate = `${month + 1}月${date}日`;
+    
+    let classes = "calendar-cell active-day";
+    let onClickAttr = "";
+    
+    if(date === todayDate) classes += " today";
+    
+    if(historyDates[fullDateKey] && historyDates[fullDateKey].count > 0) {
+      classes += " done";
+      onClickAttr = `onclick="showDayDetails('${fullDateKey}', '${displayDate}')"`;
+    }
+    
+    html += `<div class="${classes}" ${onClickAttr}>${date}</div>`;
+  }
+  
+  html += `</div>`;
+  return html;
+}
+
+function setupSelect(selector){
+  document.querySelectorAll(selector).forEach(el=>{
+    el.onclick=()=>{
+      document.querySelectorAll(selector).forEach(e=>e.classList.remove("active"));
+      el.classList.add("active");
+    };
+  });
+}
+
+function toggleAllCheckboxes(master) {
+  const checkboxes = document.querySelectorAll('.category-check');
+  checkboxes.forEach(cb => cb.checked = master.checked);
+}
+
+function showStart(){
+  clearTimeout(nextTimer);
+  window.removeEventListener("keydown", handleEnterNext);
+  app.innerHTML=`
+<div class="card">
+<h2>出題モード</h2>
+<div class="select-grid">
+<button class="select-btn active" data-mode="normal">順番</button>
+<button class="select-btn" data-mode="random">ランダム</button>
+<button class="select-btn" data-mode="weak">苦手優先</button>
+</div>
+</div>
+
+<div class="card">
+<h2>カテゴリ選択</h2>
+<div class="markdown-list">
+  <label class="markdown-item">
+    <input type="checkbox" id="checkAll" onchange="toggleAllCheckboxes(this)"> <b>すべて選択 / 解除</b>
+  </label>
+  <hr style="width:100%; border:0; border-top:1px dashed var(--border); margin:4px 0;">
+  <label class="markdown-item"><input type="checkbox" class="category-check" value="11"> 11の段</label>
+  <label class="markdown-item"><input type="checkbox" class="category-check" value="12"> 12の段</label>
+  <label class="markdown-item"><input type="checkbox" class="category-check" value="13"> 13の段</label>
+  <label class="markdown-item"><input type="checkbox" class="category-check" value="14"> 14の段</label>
+  <label class="markdown-item"><input type="checkbox" class="category-check" value="15"> 15の段</label>
+  <label class="markdown-item"><input type="checkbox" class="category-check" value="16"> 16の段</label>
+  <label class="markdown-item"><input type="checkbox" class="category-check" value="17"> 17の段</label>
+  <label class="markdown-item"><input type="checkbox" class="category-check" value="18"> 18の段</label>
+  <label class="markdown-item"><input type="checkbox" class="category-check" value="19"> 19の段</label>
+  <label class="markdown-item"><input type="checkbox" class="category-check" value="square"> 平方数</label>
+  <label class="markdown-item"><input type="checkbox" class="category-check" value="fraction-decimal"> 分数→小数</label>
+  <label class="markdown-item"><input type="checkbox" class="category-check" value="reduction"> 約分</label>
+  <label class="markdown-item"><input type="checkbox" class="category-check" value="angle"> 多角形の内角</label>
+  <label class="markdown-item"><input type="checkbox" class="category-check" value="prime"> 素数 (10問)</label>
+  <label class="markdown-item"><input type="checkbox" class="category-check" value="miss"> ミス問題復習</label>
+</div>
+</div>
+
+<div class="card">
+<h2>問題数</h2>
+<input type="number" id="count" placeholder="空欄で全問">
+</div>
+
+<div class="card">
+<div class="stats">
+<div class="stat">
+<div>累計解答数</div>
+<div class="stat-value" id="globalCountLabel">${totalCountGlobal}</div>
+</div>
+<div class="stat">
+<div>直近20問の平均速度</div>
+<div class="stat-value">${getRecentAverageSpeed()}秒</div>
+</div>
+</div>
+
+<hr style="border:0; border-top:1px solid var(--border); margin: 20px 0;">
+<div id="calendarWrapper">${generateCalendarHTML()}</div>
+
+</div>
+
+<div class="button-row center">
+<button class="main-btn" style="width: 100%; max-width: 300px;" onclick="startQuiz()">スタート</button>
+</div>
+`;
+
+  setupSelect("[data-mode]");
+}
+
+function isPrime(n){
+  if(n<2) return false;
+  for(let i=2;i*i<=n;i++){
+    if(n%i===0) return false;
+  }
+  return true;
+}
+
+function generatePrimeQuiz(){
+  const arr=[];
+  const used=new Set();
+  while(arr.length<10){
+    const num=Math.floor(Math.random()*99)+1;
+    if(num>=10 && num%2===0) continue;
+    if(used.has(num)) continue;
+    used.add(num);
+    arr.push({
+      question:`${num}は素数？`,
+      answer:isPrime(num) ? "○" : "×",
+      status:"prime",
+      stats: {correct:0, wrong:0}
+    });
+  }
+  return arr;
+}
+
+function startQuiz(){
+  score=0;
+  streak=0;
+  index=0;
+  results=[];
+  misses=[];
+  questionTimes=[];
+  totalStart=Date.now();
+
+  const mode=document.querySelector("[data-mode].active").dataset.mode;
+  const limit=parseInt(document.getElementById("count").value);
+
+  const checkedBoxes = document.querySelectorAll('.category-check:checked');
+  const selectedStatuses = Array.from(checkedBoxes).map(cb => cb.value);
+
+  if(selectedStatuses.length === 0) {
+    openModal("⚠️ エラー", "カテゴリを1つ以上選択してください。");
+    return;
+  }
+
+  let primeQuestions = [];
+  if(selectedStatuses.includes("prime")){
+    primeQuestions = generatePrimeQuiz();
+  }
+  
+  let baseQuestions = [];
+  const normalStatuses = selectedStatuses.filter(s => s !== "prime" && s !== "miss");
+  if(normalStatuses.length > 0) {
+    baseQuestions = originalQuiz.questions.filter(q => normalStatuses.includes(q.status));
+  }
+
+  if(selectedStatuses.includes("miss")){
+    const missFiltered = originalQuiz.questions.filter(q => q.stats.wrong > q.stats.correct);
+    missFiltered.forEach(mq => {
+      if(!baseQuestions.includes(mq)) {
+        baseQuestions.push(mq);
+      }
+    });
+  }
+
+  let finalQuestions = [];
+
+  if(mode === "normal") {
+    finalQuestions = baseQuestions.concat(primeQuestions);
+  } else {
+    finalQuestions = baseQuestions.concat(primeQuestions);
+    if(mode === "random"){
+      shuffle(finalQuestions);
+    }
+    if(mode === "weak"){
+      finalQuestions.sort((a,b)=>{
+        return (b.stats.wrong-b.stats.correct) - (a.stats.wrong-a.stats.correct);
+      });
+    }
+  }
+
+  quiz = { questions: finalQuestions };
+
+  if(!isNaN(limit) && limit > 0){
+    quiz.questions = quiz.questions.slice(0, limit);
+  }
+
+  if(quiz.questions.length === 0){
+    openModal("ℹ️ お知らせ", "対象の問題がありませんでした。");
+    return;
+  }
+
+  showQuestion();
+}
+
+let timerInterval=null;
+
+function startTimer(){
+  clearInterval(timerInterval);
+  timerInterval=setInterval(()=>{
+    const el=document.getElementById("timer");
+    if(!el) return;
+    el.textContent=((Date.now()-questionStart)/1000).toFixed(1)+" 秒";
+  },100);
+}
+
+function showQuestion(){
+  clearTimeout(nextTimer);
+  window.removeEventListener("keydown", handleEnterNext);
+  
+  if(index>=quiz.questions.length){
+    showResult();
+    return;
+  }
+
+  questionStart=Date.now();
+  const q=quiz.questions[index];
+  const progress=Math.round((index/quiz.questions.length)*100);
+
+  if(q.status==="prime"){
+    app.innerHTML=`
+<div class="card" id="quizCard">
+<div class="effect-overlay" id="effectOverlay"></div>
+<div class="topbar">
+<div class="badge">連続正解 ${streak}</div>
+<div id="timer">0.0 秒</div>
+</div>
+<div class="progress">
+<div class="progress-inner" style="width:${progress}%"></div>
+</div>
+<div>第 ${index+1} 問 / ${quiz.questions.length}</div>
+<div class="question">${q.question}</div>
+<div class="button-row">
+<button class="ox-btn main-btn" id="btnO" onclick="answerPrime('○')">○</button>
+<button class="ox-btn sub-btn" id="btnX" onclick="answerPrime('×')">×</button>
+</div>
+<div class="button-row">
+<button class="danger-sub-btn" onclick="showResult()">終了</button>
+</div>
+</div>
+`;
+    startTimer();
+    return;
+  }
+
+  app.innerHTML=`
+<div class="card" id="quizCard">
+<div class="effect-overlay" id="effectOverlay"></div>
+<div class="topbar">
+<div class="badge">連続正解 ${streak}</div>
+<div id="timer">0.0 秒</div>
+</div>
+<div class="progress">
+<div class="progress-inner" style="width:${progress}%"></div>
+</div>
+<div>第 ${index+1} 問 / ${quiz.questions.length}</div>
+<div class="question">${q.question}</div>
+<input id="answerInput" autocomplete="off" inputmode="numeric">
+<div class="button-row">
+<button class="main-btn" onclick="checkAnswer()">解答</button>
+<button class="danger-sub-btn" onclick="showResult()">終了</button>
+</div>
+</div>
+`;
+
+  const input=document.getElementById("answerInput");
+  if(input) {
+    setTimeout(()=>{ input.focus(); },20);
+    input.addEventListener("keydown",e=>{
+      if(e.key==="Enter"){ checkAnswer(); }
+    });
+  }
+  startTimer();
+}
+
+function recordTime(){
+  const duration = (Date.now()-questionStart)/1000;
+  questionTimes.push(duration);
+  
+  recentTimes.push(duration);
+  if(recentTimes.length > 20){
+    recentTimes.shift();
+  }
+
+  trackAnswerForToday(duration);
+}
+
+function checkAnswer(){
+  const input=document.getElementById("answerInput");
+  if(!input) return;
+  recordTime();
+  const q=quiz.questions[index];
+  const user=input.value;
+  const correct=normalize(user)===normalize(q.answer);
+  finishAnswer(correct,user,q.answer,q.question,q);
+}
+
+function answerPrime(choice){
+  recordTime();
+  const q=quiz.questions[index];
+  const correct=choice===q.answer;
+  finishAnswer(correct,choice,q.answer,q.question,q);
+}
+
+function finishAnswer(correct,user,answer,question,q){
+  clearInterval(timerInterval);
+
+  if(correct){
+    score++;
+    streak++;
+    if(q.stats) q.stats.correct++;
+  }else{
+    streak=0;
+    if(q.stats) q.stats.wrong++;
+    misses.push(q);
+  }
+
+  results.push({
+    question,
+    user:user||"(未入力)",
+    answer,
+    correct
+  });
+
+  const card = document.getElementById("quizCard");
+  const overlay = document.getElementById("effectOverlay");
+  
+  if(correct) {
+    overlay.textContent = "⭕";
+    overlay.style.color = "var(--good)";
+    overlay.classList.add("animate-ok");
+  } else {
+    overlay.textContent = "❌";
+    overlay.style.color = "var(--bad)";
+    overlay.classList.add("animate-ng");
+    card.classList.add("shake");
+  }
+
+  setTimeout(() => {
+    showJudge(correct, answer);
+  }, 600);
+}
+
+function showJudge(correct,answer){
+  app.innerHTML=`
+<div class="card" style="text-align:center;">
+<h2 class="${correct ? 'good':'bad'}" style="font-size: 40px; margin: 10px 0;">${correct ? '正解！':'不正解'}</h2>
+${!correct ? `<div style="font-size:38px; margin-bottom:15px; font-weight:bold;">正解：<span class="good">${answer}</span></div>` : ''}
+${correct ? `<div style="color:var(--sub); margin-bottom:10px; font-size:16px;">1秒後に次の問題に進みます</div>` : ''}
+<div class="button-row" style="justify-content:center;">
+<button class="main-btn" id="nextBtn" onclick="nextQuestion()">次へ</button>
+<button class="danger-sub-btn" onclick="showResult()">終了</button>
+</div>
+</div>
+`;
+
+  const nextBtn = document.getElementById("nextBtn");
+  if(nextBtn) setTimeout(()=>{ nextBtn.focus(); }, 20);
+
+  if(correct){
+    nextTimer = setTimeout(nextQuestion, 1000);
+  }
+
+  window.addEventListener("keydown", handleEnterNext);
+}
+
+function handleEnterNext(e){
+  if(e.key==="Enter"){
+    e.preventDefault();
+    window.removeEventListener("keydown", handleEnterNext);
+    nextQuestion();
+  }
+}
+
+function nextQuestion(){
+  window.removeEventListener("keydown", handleEnterNext);
+  index++;
+  showQuestion();
+}
+
+function drawChart(values){
+  const canvas=document.getElementById("chart");
+  if(!canvas) return;
+
+  const ctx=canvas.getContext("2d");
+  const rect = canvas.getBoundingClientRect();
+  canvas.width=rect.width * 2; 
+  canvas.height=240;
+
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  if(values.length === 0) return;
+
+  ctx.lineWidth=4;
+  ctx.strokeStyle="#4f46e5";
+  ctx.beginPath();
+
+  const maxTime = Math.max(...values, 5);
+
+  values.forEach((v,i)=>{
+    const x=i*(canvas.width/(values.length-1||1));
+    const y= (canvas.height - 40) - (v / maxTime * (canvas.height - 60));
+
+    if(i===0){
+      ctx.moveTo(x,y);
+    }else{
+      ctx.lineTo(x,y);
+    }
+  });
+  ctx.stroke();
+}
+
+function retryMisses(){
+  if(misses.length===0){
+    openModal("🎉 おめでとう！", "ミスはありません。全問正解です！");
+    return;
+  }
+  quiz={questions:[...misses]};
+  index=0;
+  score=0;
+  results=[];
+  questionTimes=[];
+  misses=[];
+  showQuestion();
+}
+
+function showResult(){
+  clearTimeout(nextTimer);
+  clearInterval(timerInterval);
+  window.removeEventListener("keydown", handleEnterNext);
+
+  const total=results.length;
+  if(total === 0) {
+    showStart();
+    return;
+  }
+
+  const rate=Math.round((score/total)*100);
+  const totalSec=((Date.now()-totalStart)/1000).toFixed(1);
+  const avg=questionTimes.length ? (questionTimes.reduce((a,b)=>a+b,0)/questionTimes.length).toFixed(1) : 0;
+
+  let detail="";
+  results.forEach((r,i)=>{
+    detail += `
+<div class="result-item">
+<b>第${i+1}問：</b>${r.question}<br>
+解答：${r.user}<br>
+正解：${r.answer}<br>
+<span class="${r.correct ? 'good':'bad'}" style="font-weight:bold;">${r.correct ? '正解':'不正解'}</span>
+</div>
+`;
+  });
+
+  app.innerHTML=`
+<div class="card">
+<h2>リザルト</h2>
+<div class="stats">
+<div class="stat">
+<div>正解数</div>
+<div class="stat-value">${score}/${total}</div>
+</div>
+<div class="stat">
+<div>正答率</div>
+<div class="stat-value">${rate}%</div>
+</div>
+<div class="stat">
+<div>平均時間</div>
+<div class="stat-value">${avg}秒</div>
+</div>
+<div class="stat">
+<div>合計時間</div>
+<div class="stat-value">${totalSec}秒</div>
+</div>
+</div>
+
+<div class="progress">
+<div class="progress-inner" style="width:${rate}%"></div>
+</div>
+
+<h2>回答速度グラフ (秒)</h2>
+<canvas id="chart"></canvas>
+
+<div class="button-row">
+<button class="main-btn" id="retryBtn" onclick="retryMisses()">ミス問題だけ再挑戦</button>
+<button class="sub-btn" onclick="showStart()">ホームへ戻る</button>
+</div>
+
+<h2>解答一覧</h2>
+${detail}
+</div>
+`;
+
+  const retryBtn = document.getElementById("retryBtn");
+  if(retryBtn && misses.length > 0) {
+    setTimeout(()=>{ retryBtn.focus(); }, 20);
+  }
+
+  setTimeout(() => { drawChart(questionTimes); }, 50);
+}
+
+// 初回UI描画
+showStart();
+</script>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js";
+import { getFirestore, doc, setDoc, getDoc, collection, getDocs, increment } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBfnGiwlxhP50_mc8HoaYimFqEN-dN6CqU",
+  authDomain: "honoka-anki.firebaseapp.com",
+  projectId: "honoka-anki",
+  storageBucket: "honoka-anki.firebasestorage.app",
+  messagingSenderId: "229410463571",
+  appId: "1:229410463571:web:601b58c335f5d7f0bd0ba6",
+  measurementId: "G-HS41FKYV0Q"
+};
+
+const fbApp = initializeApp(firebaseConfig);
+const db = getFirestore(fbApp);
+
+// クラウドから最新データをロードしてローカルを同期
+async function loadDataFromFirebase() {
+  try {
+    // 1. 日別レコードの一括読み込み
+    const querySnapshot = await getDocs(collection(db, "daily_records"));
+    querySnapshot.forEach((doc) => {
+      historyDates[doc.id] = doc.data();
+    });
+
+    // 2. トータル問題数の読み込み
+    const totalDocRef = doc(db, "total_records", "global");
+    const totalDocSnap = await getDoc(totalDocRef);
+    if (totalDocSnap.exists()) {
+      totalCountGlobal = totalDocSnap.data().totalCount || 0;
+    }
+
+    // 同期したデータをLocalStorageにバックアップ保存
+    saveLocalStats();
+
+    // UIパーツをリフレッシュ
+    const label = document.getElementById("globalCountLabel");
+    if(label) label.textContent = totalCountGlobal;
+    
+    const wrapper = document.getElementById("calendarWrapper");
+    if(wrapper) wrapper.innerHTML = generateCalendarHTML();
+
+    document.getElementById("loadStatus").textContent = "クラウドの最新データと同期しました";
+  } catch (error) {
+    console.error("Firebaseデータ読み込み失敗:", error);
+    document.getElementById("loadStatus").textContent = "オフラインモードで起動しました";
+  }
+}
+
+// データをクラウド（Firestore）にインクリメント同期する関数
+async function syncToFirebase(dateStr) {
+  try {
+    // 日別ドキュメントの更新
+    await setDoc(doc(db, "daily_records", dateStr), {
+      date: dateStr,
+      count: historyDates[dateStr].count,
+      updatedAt: new Date().toISOString()
+    });
+
+    // トータル別保存（incrementを使ってサーバー側で確実に+1）
+    await setDoc(doc(db, "total_records", "global"), {
+      totalCount: increment(1),
+      lastUpdatedAt: new Date().toISOString()
+    }, { merge: true });
+
+  } catch (error) {
+    console.error("Firebaseへの同期に失敗しました:", error);
+  }
+}
+
+// 既存の trackAnswerForToday をフック拡張
+const originalTrackAnswer = trackAnswerForToday;
+trackAnswerForToday = function(duration) {
+  originalTrackAnswer(duration);
+  
+  const now = new Date();
+  const y = now.getFullYear();
+  const m = String(now.getMonth() + 1).padStart(2, '0');
+  const d = String(now.getDate()).padStart(2, '0');
+  const dateStr = `${y}-${m}-${d}`;
+  
+  syncToFirebase(dateStr);
+};
+
+// 起動時にFirebaseを参照する
+loadDataFromFirebase();
+</script>
+</body>
+</html>
