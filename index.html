@@ -239,7 +239,7 @@ input[type="number"] {
   margin-top:8px;
 }
 
-/* カレンダー用スタイル（PC・大画面ベース） */
+/* カレンダー用スタイル（PCなどの大画面ベース） */
 .calendar-title {
   font-size: 18px;
   font-weight: bold;
@@ -263,7 +263,7 @@ input[type="number"] {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 16px; 
+  font-size: 16px;
   font-weight: 700;
   border-radius: 12px;
   background: rgba(99,102,241,.03);
@@ -273,7 +273,7 @@ input[type="number"] {
   white-space: nowrap;
 }
 .calendar-cell .month-label {
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 700;
   opacity: 0.8;
 }
@@ -389,20 +389,22 @@ canvas{
    デバイス別の出し分け設定（レスポンシブ）
    ======================================================== */
 
-/* ① iPad・タブレット用のサイズ調整 (画面幅 641px 〜 1024px) */
-@media (min-width: 641px) and (max-width: 1024px) {
+/* ① iPad・高解像度タブレット用の範囲 (画面幅 641px 〜 1200px) */
+@media (min-width: 641px) and (max-width: 1200px) {
   h1 { font-size: 36px; }
   .question { font-size: 50px; }
+  
+  /* iPadで小さすぎず、押しやすくなるように専用サイズを固定 */
   .calendar-cell { 
-    font-size: 15px !important; 
-    padding: 6px !important;
-    border-radius: 10px;
+    font-size: 16px !important;  
+    padding: 10px !important;    
+    border-radius: 12px;
   }
   .calendar-cell .month-label { 
-    font-size: 12px !important; 
+    font-size: 13px !important; 
   }
   .calendar-day-label {
-    font-size: 13px !important;
+    font-size: 14px !important;
   }
 }
 
@@ -413,10 +415,10 @@ canvas{
   .button-row>*{width:100%;}
   .ox-btn{width:100%;}
   
-  /* スマホの時は絶対にはみ出さない限界サイズまで縮小 */
+  /* スマホの時は絶対に画面からはみ出さないコンパクトサイズに固定 */
   .calendar-cell { 
     font-size: 12px !important; 
-    padding: 2px !important;
+    padding: 4px 2px !important;
     border-radius: 8px;
   }
   .calendar-cell .month-label { 
