@@ -223,6 +223,10 @@ input[type="number"] {
   margin-bottom: 20px;
 }
 
+.standard-text {
+  font-size: 16px;
+}
+
 .stat{
   background:rgba(99,102,241,.08);
   border-radius:18px;
@@ -235,7 +239,7 @@ input[type="number"] {
   margin-top:8px;
 }
 
-/* カレンダー用スタイル（PCベース） */
+/* カレンダー用スタイル（PC・大画面ベース） */
 .calendar-title {
   font-size: 18px;
   font-weight: bold;
@@ -245,11 +249,11 @@ input[type="number"] {
 .calendar-grid {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
-  gap: 6px;
+  gap: 8px;
   text-align: center;
 }
 .calendar-day-label {
-  font-size: 12px;
+  font-size: 14px;
   font-weight: bold;
   color: var(--sub);
   padding-bottom: 4px;
@@ -259,13 +263,13 @@ input[type="number"] {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 16px; /* 飛び出し防止のため少し標準サイズ調整 */
+  font-size: 16px; 
   font-weight: 700;
-  border-radius: 10px;
+  border-radius: 12px;
   background: rgba(99,102,241,.03);
   color: var(--sub);
   border: 1px solid var(--border);
-  padding: 4px;
+  padding: 8px;
   white-space: nowrap;
 }
 .calendar-cell .month-label {
@@ -381,19 +385,45 @@ canvas{
   border-radius:18px;
 }
 
-/* スマホ用レスポンシブスタイル修正 */
-@media(max-width:640px){
+/* ========================================================
+   デバイス別の出し分け設定（レスポンシブ）
+   ======================================================== */
+
+/* ① iPad・タブレット用のサイズ調整 (画面幅 641px 〜 1024px) */
+@media (min-width: 641px) and (max-width: 1024px) {
+  h1 { font-size: 36px; }
+  .question { font-size: 50px; }
+  .calendar-cell { 
+    font-size: 15px !important; 
+    padding: 6px !important;
+    border-radius: 10px;
+  }
+  .calendar-cell .month-label { 
+    font-size: 12px !important; 
+  }
+  .calendar-day-label {
+    font-size: 13px !important;
+  }
+}
+
+/* ② スマホ用のサイズ調整 (画面幅 640px 以下) */
+@media (max-width: 640px) {
   h1{font-size:32px;}
   .question{font-size:42px;}
   .button-row>*{width:100%;}
   .ox-btn{width:100%;}
-  /* ここでスマホ時に文字を小さくし、絶対にはみ出さないようにガード */
+  
+  /* スマホの時は絶対にはみ出さない限界サイズまで縮小 */
   .calendar-cell { 
     font-size: 12px !important; 
     padding: 2px !important;
+    border-radius: 8px;
   }
   .calendar-cell .month-label { 
     font-size: 10px !important; 
+  }
+  .calendar-day-label {
+    font-size: 12px !important;
   }
 }
 </style>
