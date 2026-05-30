@@ -386,7 +386,7 @@ canvas{
   .question{font-size:42px;}
   .button-row>*{width:100%;}
   .ox-btn{width:100%;}
-  .calendar-cell { font-size: 15px; } /* スマホでも見やすくはみ出さないサイズに調整 */
+  .calendar-cell { font-size: 15px; }
   .calendar-cell .month-label { font-size: 15px; }
 }
 </style>
@@ -631,12 +631,10 @@ function showDayDetails(dateKey, displayDate) {
   openModal(`📊 ${displayDate} の学習結果`, msg);
 }
 
-// 今週の日曜〜土曜の横一列カレンダー生成
 function generateCalendarHTML(){
   const now = new Date();
-  const currentDay = now.getDay(); // 0:日, 1:月, ..., 6:土
+  const currentDay = now.getDay();
   
-  // 今週の日曜日の日付を計算
   const sunday = new Date(now);
   sunday.setDate(now.getDate() - currentDay);
   
@@ -656,7 +654,6 @@ function generateCalendarHTML(){
   const todayM = now.getMonth();
   const todayD = now.getDate();
   
-  // 日曜日から土曜日までの7日間をループ生成
   for(let i = 0; i < 7; i++) {
     const walkDate = new Date(sunday);
     walkDate.setDate(sunday.getDate() + i);
@@ -673,18 +670,15 @@ function generateCalendarHTML(){
     let classes = "calendar-cell active-day";
     let onClickAttr = "";
     
-    // 今日判定
     if(y === todayY && walkDate.getMonth() === todayM && d === todayD) {
       classes += " today";
     }
     
-    // 学習実績あり判定
     if(historyDates[fullDateKey] && historyDates[fullDateKey].count > 0) {
       classes += " done";
       onClickAttr = `onclick="showDayDetails('${fullDateKey}', '${displayDate}')"`;
     }
     
-    // 月も日も同じ大きさで出力
     html += `
       <div class="${classes}" ${onClickAttr}><span class="month-label">${m}/</span>${d}</div>
     `;
@@ -725,23 +719,23 @@ function showStart(){
 <h2>カテゴリ選択</h2>
 <div class="markdown-list">
   <label class="markdown-item">
-    <input type="checkbox" id="checkAll" onchange="toggleAllCheckboxes(this)"> <b>すべて選択 / 解除</b>
+    <input type="checkbox" id="checkAll" onchange="toggleAllCheckboxes(this)" checked> <b>すべて選択 / 解除</b>
   </label>
   <hr style="width:100%; border:0; border-top:1px dashed var(--border); margin:4px 0;">
-  <label class="markdown-item"><input type="checkbox" class="category-check" value="11"> 11の段</label>
-  <label class="markdown-item"><input type="checkbox" class="category-check" value="12"> 12の段</label>
-  <label class="markdown-item"><input type="checkbox" class="category-check" value="13"> 13の段</label>
-  <label class="markdown-item"><input type="checkbox" class="category-check" value="14"> 14の段</label>
-  <label class="markdown-item"><input type="checkbox" class="category-check" value="15"> 15の段</label>
-  <label class="markdown-item"><input type="checkbox" class="category-check" value="16"> 16の段</label>
-  <label class="markdown-item"><input type="checkbox" class="category-check" value="17"> 17の段</label>
-  <label class="markdown-item"><input type="checkbox" class="category-check" value="18"> 18の段</label>
-  <label class="markdown-item"><input type="checkbox" class="category-check" value="19"> 19の段</label>
-  <label class="markdown-item"><input type="checkbox" class="category-check" value="square"> 平方数</label>
-  <label class="markdown-item"><input type="checkbox" class="category-check" value="fraction-decimal"> 分数→小数</label>
-  <label class="markdown-item"><input type="checkbox" class="category-check" value="reduction"> 約分</label>
-  <label class="markdown-item"><input type="checkbox" class="category-check" value="angle"> 多角形の内角</label>
-  <label class="markdown-item"><input type="checkbox" class="category-check" value="prime"> 素数 (10問)</label>
+  <label class="markdown-item"><input type="checkbox" class="category-check" value="11" checked> 11の段</label>
+  <label class="markdown-item"><input type="checkbox" class="category-check" value="12" checked> 12の段</label>
+  <label class="markdown-item"><input type="checkbox" class="category-check" value="13" checked> 13の段</label>
+  <label class="markdown-item"><input type="checkbox" class="category-check" value="14" checked> 14の段</label>
+  <label class="markdown-item"><input type="checkbox" class="category-check" value="15" checked> 15の段</label>
+  <label class="markdown-item"><input type="checkbox" class="category-check" value="16" checked> 16の段</label>
+  <label class="markdown-item"><input type="checkbox" class="category-check" value="17" checked> 17の段</label>
+  <label class="markdown-item"><input type="checkbox" class="category-check" value="18" checked> 18の段</label>
+  <label class="markdown-item"><input type="checkbox" class="category-check" value="19" checked> 19の段</label>
+  <label class="markdown-item"><input type="checkbox" class="category-check" value="square" checked> 平方数</label>
+  <label class="markdown-item"><input type="checkbox" class="category-check" value="fraction-decimal" checked> 分数→小数</label>
+  <label class="markdown-item"><input type="checkbox" class="category-check" value="reduction" checked> 約分</label>
+  <label class="markdown-item"><input type="checkbox" class="category-check" value="angle" checked> 多角形の内角</label>
+  <label class="markdown-item"><input type="checkbox" class="category-check" value="prime" checked> 素数 (10問)</label>
   <label class="markdown-item"><input type="checkbox" class="category-check" value="miss"> ミス問題復習</label>
 </div>
 </div>
@@ -1176,7 +1170,6 @@ ${detail}
   setTimeout(() => { drawChart(questionTimes); }, 50);
 }
 
-// 初回UI描画
 showStart();
 </script>
 
@@ -1197,23 +1190,19 @@ const firebaseConfig = {
 const fbApp = initializeApp(firebaseConfig);
 const db = getFirestore(fbApp);
 
-// クラウドから最新データをロードしてローカルを同期
 async function loadDataFromFirebase() {
   try {
-    // 1. 日別レコードの一括読み込み
     const querySnapshot = await getDocs(collection(db, "daily_records"));
     querySnapshot.forEach((doc) => {
       historyDates[doc.id] = doc.data();
     });
 
-    // 2. トータル問題数の読み込み
     const totalDocRef = doc(db, "total_records", "global");
     const totalDocSnap = await getDoc(totalDocRef);
     if (totalDocSnap.exists()) {
       totalCountGlobal = totalDocSnap.data().totalCount || 0;
     }
 
-    // UIパーツをリフレッシュ
     const label = document.getElementById("globalCountLabel");
     if(label) label.textContent = totalCountGlobal;
     
@@ -1227,17 +1216,14 @@ async function loadDataFromFirebase() {
   }
 }
 
-// データをクラウド（Firestore）にインクリメント同期する関数
 async function syncToFirebase(dateStr) {
   try {
-    // 日別ドキュメントの更新
     await setDoc(doc(db, "daily_records", dateStr), {
       date: dateStr,
       count: historyDates[dateStr].count,
       updatedAt: new Date().toISOString()
     });
 
-    // トータル別保存（incrementを使ってサーバー側で確実に+1）
     await setDoc(doc(db, "total_records", "global"), {
       totalCount: increment(1),
       lastUpdatedAt: new Date().toISOString()
@@ -1248,7 +1234,6 @@ async function syncToFirebase(dateStr) {
   }
 }
 
-// 既存の trackAnswerForToday をフック拡張
 const originalTrackAnswer = trackAnswerForToday;
 trackAnswerForToday = function(duration) {
   originalTrackAnswer(duration);
@@ -1262,7 +1247,6 @@ trackAnswerForToday = function(duration) {
   syncToFirebase(dateStr);
 };
 
-// 起動時にFirebaseを参照する
 loadDataFromFirebase();
 </script>
 </body>
